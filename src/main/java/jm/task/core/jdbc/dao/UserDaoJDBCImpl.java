@@ -70,7 +70,7 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void cleanUsersTable() throws SQLException {
         try(Statement stat = conn.createStatement()) {
-            stat.executeUpdate("DELETE FROM user1");
+            stat.executeUpdate("TRUNCATE TABLE user1");
         }catch(Exception e){
             System.out.println("Error");
         }
