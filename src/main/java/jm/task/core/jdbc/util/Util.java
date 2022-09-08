@@ -14,4 +14,13 @@ public class Util{
             return connection;// реализуйте настройку соеденения с БД
 
     }
+    private static String userNameHib = "postgres";
+    private static String passwordHib = "admin";
+    private static String connectionURLHib="jdbc:postgresql://localhost:5432/postgres?currentSchema = Hib";;// реализуйте алгоритм здесь
+    public static Connection connectHib() throws SQLException, ClassNotFoundException {
+        Connection connection = DriverManager.getConnection(connectionURL, userName, password);
+        System.out.println("We're connected");
+        return connection;
+    }
+
 }

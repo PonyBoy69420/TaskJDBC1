@@ -1,5 +1,6 @@
 package jm.task.core.jdbc.service;
 
+import jm.task.core.jdbc.dao.UserDaoHibernateImpl;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 
@@ -9,31 +10,32 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     UserDaoJDBCImpl a = new UserDaoJDBCImpl();
+    UserDaoHibernateImpl b = new UserDaoHibernateImpl();
 
     public UserServiceImpl() throws SQLException, ClassNotFoundException {
     }
 
     public void createUsersTable() throws SQLException, ClassNotFoundException {
-        a.createUsersTable();
+        b.createUsersTable();
     }
 
     public void dropUsersTable() throws SQLException {
-        a.dropUsersTable();
+        b.dropUsersTable();
     }
 
     public void saveUser(String name, String lastName, byte age) throws SQLException {
-        a.saveUser(name,lastName,age);
+        b.saveUser(name,lastName,age);
     }
 
     public void removeUserById(long id) throws SQLException {
-        a.removeUserById(id);
+        b.removeUserById(id);
     }
 
     public List<User> getAllUsers() throws SQLException {
-        return a.getAllUsers();
+        return b.getAllUsers();
     }
 
     public void cleanUsersTable() throws SQLException {
-        a.cleanUsersTable();
+        b.cleanUsersTable();
     }
 }
