@@ -2,40 +2,23 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
-import javax.persistence.*;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 
-@javax.persistence.Entity
-@Table(name = "User3")
 public class UserDaoHibernateImpl implements UserDao {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
-
-    @Column(name="name")
-    private String name;
-
-    @Column(name = "lastName")
-    private String lastName;
-
-    @Column(name="age")
-    private int age;
+    public static final SessionFactory sessionFactory = Util.getSessionFactory();
 
 
-    Connection conn= Util.connectHib();
-    SessionFactory sessionFactory = new Configuration().buildSessionFactory();
-
-    Session session = null;
 
     public UserDaoHibernateImpl() throws SQLException, ClassNotFoundException {
 
@@ -44,45 +27,120 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-        try(Statement stat = conn.createStatement()) {
-            stat.executeUpdate("CREATE TABLE IF NOT EXISTS User3 (id INT(64) NOT NULL AUTO_INCREMENT, name VARCHAR(50), lastName VARCHAR(50), age INT(64), PRIMARY KEY(id));");
-        }catch(Exception e){
-            System.out.println("Error");
+        Transaction trans = null;
+        Session session = sessionFactory.openSession();
+        try{
+            trans= session.getTransaction();
+            session.beginTransaction();
+            session.createSQLQuery("CREATE TABLE IF NOT EXISTS User3 (id serial primary key, name VARCHAR(50), lastName VARCHAR(50), age integer);").executeUpdate();
+            if(!trans.wasCommitted())trans.commit();
+            System.out.println("Tablica sozdana");
+        }catch(HibernateException e){
+            trans.rollback();
+            e.printStackTrace();
+        }finally{
+            session.close();
         }
     }
 
     @Override
     public void dropUsersTable() {
-
+        Transaction trans = null;
+        Session session = sessionFactory.openSession();
+        try{
+            trans= session.getTransaction();
+            session.beginTransaction();
+            session.createSQLQuery("DROP TABLE IF EXISTS User3").executeUpdate();
+            if(!trans.wasCommitted())trans.commit();
+            System.out.println("Tablica udalena");
+        }catch(HibernateException e){
+            trans.rollback();
+            e.printStackTrace();
+        }finally{
+            session.close();
+        }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        session = sessionFactory.getCurrentSession();
-        session.beginTransaction();
+        Transaction trans = null;
         User user = new User(name,lastName,age);
-        session.save(user);
-        session.getTransaction().commit();
-        sessionFactory.close();
+        Session session = sessionFactory.openSession();
+        try{
+            trans= session.getTransaction();
+            session.beginTransaction();
+            session.save(user);
+            if(!trans.wasCommitted())
+                trans.commit();
+            System.out.println("User dobavlen");
+        }catch(HibernateException e){
+            trans.rollback();
+            e.printStackTrace();
+        }finally{
+            session.close();
+        }
     }
 
     @Override
     public void removeUserById(long id) {
-
+        Transaction trans = null;
+        Session session = sessionFactory.openSession();
+        try{
+            trans= session.getTransaction();
+            session.beginTransaction();
+            User user = (User) session.get(User.class, id);
+            session.delete(user);
+            if(!trans.wasCommitted())
+                trans.commit();
+            System.out.println("User udalen");
+        }catch(HibernateException e){
+            trans.rollback();
+            e.printStackTrace();
+        }finally{
+            session.close();
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        Transaction trans = null;
+        List<User> user = new ArrayList<>();
+        Session session = sessionFactory.openSession();
+        try{
+            trans= session.getTransaction();
+            session.beginTransaction();
+            user = session.createQuery("FROM User").list();
+            if(!trans.wasCommitted())
+                trans.commit();
+            System.out.println("User udalen");
+        }catch(HibernateException e){
+            trans.rollback();
+            e.printStackTrace();
+        }finally{
+            session.close();
+        }
+        return user;
     }
 
     @Override
     public void cleanUsersTable() {
-
-    }
-
-    @Override
-    public String toString(){
-        return String.format("User3 [id = %d, name = %s, lastName = %s, age = %d]",id ,name, lastName,age);
+        Transaction trans = null;
+        Session session = sessionFactory.openSession();
+        try{
+            trans= session.getTransaction();
+            session.beginTransaction();
+            session.createQuery("DELETE FROM User").executeUpdate();
+            if(!trans.wasCommitted())
+                trans.commit();
+            System.out.println("Tabliza Ochishena");
+        }catch(HibernateException e){
+            trans.rollback();
+            e.printStackTrace();
+        }finally{
+            session.close();
+        }
     }
 }
+
+
+
