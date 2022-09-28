@@ -33,7 +33,7 @@ public class UserDaoHibernateImpl implements UserDao {
             trans= session.getTransaction();
             session.beginTransaction();
             session.createSQLQuery("CREATE TABLE IF NOT EXISTS User3 (id serial primary key, name VARCHAR(50), lastName VARCHAR(50), age integer);").executeUpdate();
-            if(!trans.wasCommitted())trans.commit();
+            trans.commit();
             System.out.println("Tablica sozdana");
         }catch(HibernateException e){
             trans.rollback();
@@ -51,7 +51,7 @@ public class UserDaoHibernateImpl implements UserDao {
             trans= session.getTransaction();
             session.beginTransaction();
             session.createSQLQuery("DROP TABLE IF EXISTS User3").executeUpdate();
-            if(!trans.wasCommitted())trans.commit();
+            trans.commit();
             System.out.println("Tablica udalena");
         }catch(HibernateException e){
             trans.rollback();
@@ -70,8 +70,7 @@ public class UserDaoHibernateImpl implements UserDao {
             trans= session.getTransaction();
             session.beginTransaction();
             session.save(user);
-            if(!trans.wasCommitted())
-                trans.commit();
+            trans.commit();
             System.out.println("User dobavlen");
         }catch(HibernateException e){
             trans.rollback();
@@ -90,8 +89,7 @@ public class UserDaoHibernateImpl implements UserDao {
             session.beginTransaction();
             User user = (User) session.get(User.class, id);
             session.delete(user);
-            if(!trans.wasCommitted())
-                trans.commit();
+            trans.commit();
             System.out.println("User udalen");
         }catch(HibernateException e){
             trans.rollback();
@@ -110,8 +108,7 @@ public class UserDaoHibernateImpl implements UserDao {
             trans= session.getTransaction();
             session.beginTransaction();
             user = session.createQuery("FROM User").list();
-            if(!trans.wasCommitted())
-                trans.commit();
+            trans.commit();
             System.out.println("User udalen");
         }catch(HibernateException e){
             trans.rollback();
@@ -130,8 +127,7 @@ public class UserDaoHibernateImpl implements UserDao {
             trans= session.getTransaction();
             session.beginTransaction();
             session.createQuery("DELETE FROM User").executeUpdate();
-            if(!trans.wasCommitted())
-                trans.commit();
+            trans.commit();
             System.out.println("Tabliza Ochishena");
         }catch(HibernateException e){
             trans.rollback();
